@@ -39,12 +39,13 @@ All licenses below were checked against the permissive-OSS policy in project con
 | `react`, `react-native` | UI runtime | MIT |
 | `react-native-screens`, `react-native-safe-area-context` | Expo Router native deps | MIT |
 | `expo-linking`, `expo-constants`, `expo-status-bar` | Expo Router / shell deps | MIT |
+| `@expo/metro-runtime`, `@expo/log-box` | Required peers of `expo-router`, declared explicitly | MIT |
 | `typescript` | Type checking | Apache-2.0 |
 | `@types/react`, `@types/jest` | Type definitions | MIT |
 | `eslint`, `eslint-config-expo`, `eslint-config-prettier` | Linting | MIT |
 | `prettier` | Formatting | MIT |
-| `jest`, `jest-expo` | Test runner + Expo preset | MIT |
-| `@testing-library/react-native` (+ its `test-renderer` peer) | Component tests | MIT |
+| `jest`, `jest-expo`, `@react-native/jest-preset` | Test runner + Expo preset (+ its required peer) | MIT |
+| `@testing-library/react-native` (13.x) + `react-test-renderer` | Component tests | MIT |
 | `turbo` | Monorepo task runner (local cache only) | MIT |
 | `pnpm` | Package manager / workspaces | MIT |
 | `create-expo-app` | One-time generator, not a runtime dependency | BSD-3-Clause |
