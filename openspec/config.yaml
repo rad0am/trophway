@@ -65,8 +65,8 @@ context: |
 # Per-artifact rules
 rules:
   proposal:
-    - Every proposal must state which layer(s) it touches: mobile (RN/Expo),
-      backend (.NET), database (PostgreSQL), or cache (Redis).
+    - "Every proposal must state which layer(s) it touches: mobile (RN/Expo),
+      backend (.NET), database (PostgreSQL), or cache (Redis)."
     - If a proposal adds a new third-party package/library, list it with its
       license and confirm it satisfies the dependency/licensing policy above.
     - If a proposal touches PSN account linking or trophy sync, include a
