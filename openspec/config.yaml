@@ -1,32 +1,95 @@
 schema: spec-driven
 
-# Project context (optional)
-# This is shown to AI when creating artifacts.
-# Add your tech stack, conventions, style guides, domain knowledge, etc.
-# Example:
-#   context: |
-#     Tech stack: TypeScript, React, Node.js
-#     We use conventional commits
-#     Domain: e-commerce platform
+context: |
+  Product: Trophway — a mobile app for PlayStation trophy hunters, comparable to
+  psnprofiles.com but as a native app rather than a website.
 
-# Per-artifact rules (optional)
-# Add custom rules for specific artifacts.
-# Example:
-#   rules:
-#     proposal:
-#       - Keep proposals under 500 words
-#       - Always include a "Non-goals" section
-#     tasks:
-#       - Break tasks into chunks of max 2 hours
+  Platform scope: PlayStation only (no Xbox/Steam). Core features modeled on
+  psnprofiles.com:
+    - Link a PSN account and automatically sync trophy data (bronze/silver/gold/
+      platinum counts, trophy points, profile level/progress).
+    - Per-game trophy lists with name, description, earned status, global earn
+      rate (rarity %), and a rarity tier (ultra rare / very rare / rare /
+      uncommon / common).
+    - Game library per user with completion % per game and overall stats.
+    - Global and country leaderboards ranked by level/points/trophy counts.
+    - Profile comparison between two users (trophy-by-trophy diff).
+    - Trophy guides (read-only content, can start as static/seed content;
+      user-generated guides are a later phase, not MVP).
+    - Recently earned trophies / activity feed.
+  Out of scope for now: forums, gaming-session matchmaking, web app (mobile
+  app only; a web app may follow later but is not a current goal).
 
-# Per-operation guidance (optional)
-# Add advisory guidance for how apply and archive work should be conducted.
-# This is separate from artifact rules above.
-# Example:
-#   operations:
-#     apply:
-#       guidance:
-#         - Keep test summaries concise
-#     archive:
-#       guidance:
-#         - Summarize the archive outcome before finishing
+  Repository structure: monorepo. Mobile app (React Native/Expo) and backend
+  (.NET) live in the same repository, not split across separate repos.
+  Proposals/tasks should assume shared repo-root tooling (e.g. CI, linting)
+  can span both, and should specify paths relative to their layer's
+  subdirectory rather than assuming a standalone repo.
+
+  Tech stack:
+    - Mobile app: React Native with Expo.
+    - Backend: .NET (C#), exposing a REST (or minimal) API to the mobile app.
+    - Database: PostgreSQL for persistent data (users, games, trophies, sync
+      history, leaderboard snapshots).
+    - Cache: Redis for leaderboard rankings, rate-limit state, and hot read
+      paths (profile summaries, trophy lists).
+    - Design: no dedicated design system in this repo; design work happens
+      elsewhere ("design will be other"). Do not propose a design-system
+      artifact or a web frontend as part of specs.
+
+  PSN trophy data source: there is no official public PSN API for third-party
+  trophy sync. The backend integrates with PSN's unofficial/reverse-engineered
+  endpoints (the same approach used by libraries like `psn-api`) to pull a
+  linked account's trophy data using a user-supplied NPSSO token / refresh
+  token. This is an unofficial integration:
+    - Flag PSN Terms of Service risk explicitly in any proposal that touches
+      account linking or trophy sync — do not treat it as a solved concern.
+    - Store PSN tokens encrypted at rest; treat them as credentials, not
+      profile data.
+    - Design sync jobs to be resilient to PSN endpoint changes/rate limits
+      (backoff, partial-failure handling, no tight polling loops).
+
+  Dependency and licensing policy (applies to every package/library/tool
+  choice across mobile, backend, and infra):
+    - Only permissive OSS licenses are allowed: MIT, Apache-2.0, BSD
+      (2-/3-clause), ISC, or equivalent.
+    - Reject GPL/AGPL/LGPL and any "free for non-commercial use only" or
+      source-available license, even if free today — the app may be
+      commercial later and re-licensing later is expensive.
+    - Reject anything that requires a paid tier at any usage level the app is
+      expected to reach (no paid SaaS dependencies, no paid API keys as a
+      hard requirement for core features).
+    - When a proposal introduces a new dependency, name its license
+      explicitly and confirm it against this policy before including it.
+
+# Per-artifact rules
+rules:
+  proposal:
+    - Every proposal must state which layer(s) it touches: mobile (RN/Expo),
+      backend (.NET), database (PostgreSQL), or cache (Redis).
+    - If a proposal adds a new third-party package/library, list it with its
+      license and confirm it satisfies the dependency/licensing policy above.
+    - If a proposal touches PSN account linking or trophy sync, include a
+      short "PSN ToS / reliability risk" note (rate limits, token expiry,
+      endpoint changes).
+    - Do not propose web-app or design-system artifacts; this project is
+      mobile-only for now.
+  tasks:
+    - Split tasks by layer (mobile / backend / db+cache) so they can be
+      implemented and reviewed independently where possible.
+    - Call out any task that requires a real PSN account/token to test, so it
+      can be scheduled and verified manually.
+
+# Per-operation guidance
+operations:
+  apply:
+    guidance:
+      - Before adding any new package, verify its license matches the
+        permissive-OSS policy in context; if unsure, stop and ask rather than
+        assuming it's fine.
+      - Keep PSN integration code isolated behind an interface/adapter so the
+        unofficial API implementation can be swapped if PSN endpoints change.
+  archive:
+    guidance:
+      - Note in the archive summary whether any new dependency was added and
+        confirm its license again at archive time.
