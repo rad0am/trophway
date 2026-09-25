@@ -8,6 +8,6 @@ module.exports = defineConfig([
   // Formatting is Prettier's job (root `pnpm format`); disable conflicting stylistic rules.
   prettierConfig,
   {
-    ignores: ['dist/*', 'coverage/*', '.expo/*', 'expo-env.d.ts'],
+    ignores: ['dist/*', 'coverage/*', '.expo/*', 'expo-env.d.ts', 'ios/*', 'android/*'],
   },
 ]);

@@ -150,6 +150,21 @@ After the fix, `pnpm peers check` reports missing `react-dom`, reanimated, and g
 - EAS may be adopted later as an optional convenience but must never be the only build path.
 - `expo-dev-client` is not added yet. It arrives with the first custom native module.
 
+### D11. iOS 27 SDK: scene life cycle through a local config plugin (added during implementation)
+
+Apps built with Xcode 27 and the iOS 27 SDK are killed at launch unless they adopt the UIKit scene-based life cycle ("UIScene life cycle is required for apps built with this SDK"). Expo SDK 57's stable native template (`expo-template-bare-minimum@57.0.27`) still generates a window-based `AppDelegate`. SDK 58, currently a preview, adds a `SceneDelegate`. The SDK 57 runtime already ships the pieces SDK 58 relies on: `ExpoAppSceneDelegate` and `ExpoReactNativeFactoryProvider`.
+
+`apps/mobile/plugins/with-scene-lifecycle.js` copies SDK 58's template changes at prebuild:
+- It adds `UIApplicationSceneManifest` to `Info.plist`.
+- It makes `AppDelegate` conform to `ExpoReactNativeFactoryProvider`, and it drops the window creation and the linking overrides. The scene delegate now forwards those events.
+- It adds `SceneDelegate.swift`, a subclass of `ExpoAppSceneDelegate`, to the Xcode project.
+
+The generated `AppDelegate.swift` and `SceneDelegate.swift` are byte-identical to SDK 58's template. Each edit is an exact match that throws if the template changes, so a template drift fails the prebuild instead of producing an app that crashes. **Remove the plugin when upgrading to SDK 58.**
+
+*Alternatives considered.*
+- Upgrading to the SDK 58 preview: rejected, because it is a pre-release and a poor fit for a foundation scaffold.
+- Building with Xcode 26: rejected, because every developer and eventually CI would need an older Xcode, and store submissions will require the iOS 27 SDK.
+
 ### D10. CI: one GitHub Actions workflow
 
 - File: `.github/workflows/ci.yml`. Triggers: `pull_request`, and `push` to `main`. There is no `paths` filter, for two reasons:

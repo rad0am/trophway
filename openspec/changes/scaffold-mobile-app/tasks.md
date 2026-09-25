@@ -28,6 +28,7 @@ Every dependency is installed with `expo install` where the Expo SDK covers it, 
   - pressing the home link on the not-found screen returns to the home screen
 
   Verify that `pnpm mobile test` passes
+- [x] 2.13 (must precede 2.9) Add the `apps/mobile/plugins/with-scene-lifecycle.js` config plugin (design.md D11), which adopts the UIScene life cycle required by the iOS 27 SDK, and register it in `app.config.ts`. Verify that `expo prebuild --platform ios --clean` generates an `AppDelegate.swift` and a `SceneDelegate.swift` identical to Expo SDK 58's template, that `Info.plist` has `UIApplicationSceneManifest`, and that the app launches on an iOS 27 simulator without the "UIScene life cycle is required" crash
 - [ ] 2.9 **(manual)** Build and run on an iOS simulator with `pnpm mobile ios` (a local native build; Expo Go cannot handle the custom scheme). Verify these three things:
   - the home screen shows "Trophway", with no error overlay and no text under the notch or status bar
   - `xcrun simctl openurl booted "trophway://"` opens the home screen
@@ -61,14 +62,14 @@ Every dependency is installed with `expo install` where the Expo SDK covers it, 
 
 ## 4. Repo root: CI
 
-- [ ] 4.1 Add `.github/workflows/ci.yml` per design.md D10:
+- [x] 4.1 Add `.github/workflows/ci.yml` per design.md D10:
   - triggers: `pull_request`, and `push` to `main`
   - steps: `actions/checkout`, `pnpm/action-setup`, `actions/setup-node` (`node-version-file: .nvmrc`, pnpm cache), `pnpm install --frozen-lockfile`, then separate `lint` / `typecheck` / `test` / `format:check` steps
   - env: `TURBO_TELEMETRY_DISABLED=1`, `EXPO_NO_TELEMETRY=1`
   - no secrets
 
   Add one line to the README describing what CI runs. Verify by pushing the branch and opening a draft PR (ask the user before pushing), then confirm the CI check passes
-- [ ] 4.2 Verify the CI failure path on a throwaway branch: push a commit with a lint violation, confirm the CI check fails on the `lint` step, then delete the throwaway branch (ask the user before pushing)
+- [x] 4.2 Verify the CI failure path on a throwaway branch: push a commit with a lint violation, confirm the CI check fails on the `lint` step, then delete the throwaway branch (ask the user before pushing)
 
 ## 5. Final integration check
 

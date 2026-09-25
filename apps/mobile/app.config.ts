@@ -26,7 +26,11 @@ const config: ExpoConfig = {
     },
     predictiveBackGestureEnabled: false,
   },
-  plugins: ['expo-router'],
+  plugins: [
+    'expo-router',
+    // iOS 27 SDK requires the UIScene life cycle; remove on upgrade to Expo SDK 58.
+    './plugins/with-scene-lifecycle',
+  ],
   experiments: {
     typedRoutes: true,
   },
