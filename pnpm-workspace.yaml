@@ -1,0 +1,15 @@
+packages:
+  - apps/*
+  - packages/*
+
+# Don't auto-install peers: expo-router's web/drawer helpers would otherwise pull the
+# latest react-native-reanimated / -worklets / -gesture-handler / react-dom, which are
+# not SDK-compatible and would be autolinked into native builds. Required peers are
+# declared explicitly (via `expo install`) in the workspace that needs them.
+autoInstallPeers: false
+
+# Dependency build scripts are blocked unless reviewed and listed here.
+allowBuilds:
+  # napi-postinstall fallback that downloads the native binding when the platform
+  # optional dependency is missing; pnpm already installs the right binding.
+  unrs-resolver: false
