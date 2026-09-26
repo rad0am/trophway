@@ -1,35 +1,22 @@
-# dependencies
+# Repo-wide ignores only. Layer-specific patterns live next to the layer
+# (apps/mobile/.gitignore; apps/api/.gitignore for the future .NET backend).
+
+# dependencies (pnpm creates node_modules at the root and in every workspace)
 node_modules/
 
 # build output & caches
 dist/
 coverage/
 .turbo/
-.expo/
-web-build/
 *.tsbuildinfo
-
-# Expo generated
-expo-env.d.ts
-
-# Continuous Native Generation: native projects are generated, not committed
-ios/
-android/
-.kotlin/
-
-# Metro
-.metro-health-check*
 
 # env files (local overrides only; never commit secrets)
 .env*.local
 
-# signing credentials
-*.jks
-*.p8
-*.p12
+# credentials — repo-wide safety net for every layer
 *.key
-*.mobileprovision
 *.pem
+*.p12
 
 # logs
 *.log
