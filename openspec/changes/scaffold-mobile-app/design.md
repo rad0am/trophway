@@ -140,10 +140,20 @@ After the fix, `pnpm peers check` reports missing `react-dom`, reanimated, and g
 ### D9. Continuous Native Generation, no EAS dependency
 
 - `ios/` and `android/` are generated (`expo prebuild` / `expo run:*`) and git-ignored.
-- `.gitignore` also covers:
-  - `node_modules`, `.expo`, `dist`, `.turbo`, `coverage`, and `expo-env.d.ts`
-  - `.env*.local`
-  - signing material: `*.jks`, `*.p8`, `*.p12`, `*.key`, `*.mobileprovision`
+- Ignore rules are split by scope, so each layer owns its own patterns and a future `packages/*/ios/` is not swallowed by an over-broad root rule:
+  - **Root `.gitignore`**, repo-wide only:
+    - `node_modules/`, which pnpm creates at the root and in every workspace
+    - `dist/`, `coverage/`, `.turbo/`, and `*.tsbuildinfo`
+    - `.env*.local`
+    - a credential safety net: `*.key`, `*.pem`, `*.p12`
+    - logs and OS/editor files
+  - **`apps/mobile/.gitignore`**, Expo/React Native only:
+    - `.expo/` and `expo-env.d.ts` (the latter in expo-cli's managed block)
+    - anchored `/ios` and `/android`
+    - `.kotlin/` and Metro files
+    - mobile signing files: `*.jks`, `*.p8`, `*.mobileprovision`
+  - **Root `.prettierignore`** lists the mobile paths with their `apps/mobile/` prefix, because Prettier runs from the root.
+  - The future `apps/api` adds its own `.gitignore` for `bin/` and `obj/`.
 - Supported local run paths:
   - Expo Go, for fast iteration with no login
   - `expo run:ios` / `expo run:android`, for local native builds (Xcode / Android Studio)
